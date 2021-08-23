@@ -410,8 +410,16 @@ function! s:dosurround(...) " {{{1
     endif
     exe 'norm! dt'.char
   elseif char ==# "c" && &ft == "cpp"
-    call search('\C\<const\>', 'bWc')
-    exe "norm! Wd/\\s*&\<CR>"
+    let save_cursor = getcurpos()
+    if !search('\C\<const\>', 'bWc')
+      return s:beep()
+    endif
+    try
+      silent exe "norm! Wd/\\s*&\<CR>"
+    catch
+      call setpos('.', save_cursor)
+      return s:beep()
+    endtry
   else
     exe 'norm! d'.strcount.'i'.char
   endif
@@ -442,6 +450,9 @@ function! s:dosurround(...) " {{{1
   elseif char ==# "c" && &ft == "cpp"
     call search('\C\<const\>', 'bWc')
     exe "norm! d/&\<CR>x"
+    if getline('.')[col('.')-1] =~ '\w'
+      exe 'norm! i '
+    endif
   else
     " One character backwards
     call search('\m.', 'bW')
