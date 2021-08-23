@@ -247,6 +247,9 @@ function! s:wrap(string,char,type,removed,special)
   elseif newchar !~ '\a'
     let before = newchar
     let after  = newchar
+  elseif newchar ==# "c" && &ft == "cpp"
+    let before = 'const '
+    let after = '&'
   else
     let before = ''
     let after  = ''
@@ -406,6 +409,9 @@ function! s:dosurround(...) " {{{1
       exe 'norm! l'
     endif
     exe 'norm! dt'.char
+  elseif char ==# "c" && &ft == "cpp"
+    call search('\C\<const\>', 'bWc')
+    exe "norm! Wd/\\s*&\<CR>"
   else
     exe 'norm! d'.strcount.'i'.char
   endif
@@ -433,6 +439,9 @@ function! s:dosurround(...) " {{{1
   elseif char =~# '[[:punct:][:space:]]' && char !~# '[][(){}<>]'
     exe 'norm! F'.char
     exe 'norm! df'.char
+  elseif char ==# "c" && &ft == "cpp"
+    call search('\C\<const\>', 'bWc')
+    exe "norm! d/&\<CR>x"
   else
     " One character backwards
     call search('\m.', 'bW')
