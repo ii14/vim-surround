@@ -415,7 +415,7 @@ function! s:dosurround(...) " {{{1
       return s:beep()
     endif
     try
-      silent exe "norm! Wd/\\s*&\<CR>"
+      silent exe "keepp norm! Wd/\\s*&\<CR>"
     catch
       call setpos('.', save_cursor)
       return s:beep()
@@ -449,7 +449,7 @@ function! s:dosurround(...) " {{{1
     exe 'norm! df'.char
   elseif char ==# "c" && &ft == "cpp"
     call search('\C\<const\>', 'bWc')
-    exe "norm! d/&\<CR>x"
+    silent exe "keepp norm! d/&\<CR>x"
     if getline('.')[col('.')-1] =~ '\w'
       exe 'norm! i '
     endif
